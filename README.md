@@ -1,17 +1,17 @@
 [![Build Status](https://travis-ci.org/grf-labs/grf.svg?branch=master)](https://travis-ci.org/grf-labs/grf)
 ![CRAN Downloads overall](http://cranlogs.r-pkg.org/badges/grand-total/grf)
 
-# srf: Survival Random Forest
+# SRF: Survival Random Forest
 
-srf is built upon grf package for forest-based statistical estimation and inference. srf currently provides non-parametric methods for restricted mean survival regression.
+SRF is built upon grf package for forest-based statistical estimation and inference. srf currently provides non-parametric methods for restricted mean survival regression.
 
-srf supports 'honest' estimation (where one subset of the data is used for choosing splits, and another for populating the leaves of the tree), and confidence intervals for restricted mean survival regression.
+SrF supports 'honest' estimation (where one subset of the data is used for choosing splits, and another for populating the leaves of the tree), and confidence intervals for restricted mean survival regression.
 
 This package is currently in beta, and we expect to make continual improvements to its performance and usability. 
 
 ### Authors
 
-srf is developed and maintained by Mingyang Liu (mingyal@sas.upenn.edu), Hongzhe Li.
+SRF is developed and maintained by Mingyang Liu (mingyal@sas.upenn.edu), Hongzhe Li.
 
 The repository first started as a fork of the [grf](https://github.com/grf-labs/grf) repository -- we owe a great deal of thanks to the ranger authors for their useful and free package.
 
