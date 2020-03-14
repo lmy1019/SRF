@@ -11,7 +11,7 @@ This package is currently in beta, and we expect to make continual improvements 
 
 ### Authors
 
-srf is written and maintained by Mingyang Liu (mingyal@sas.upenn.edu), Hongzhe Li.
+srf is developed and maintained by Mingyang Liu (mingyal@sas.upenn.edu), Hongzhe Li.
 
 The repository first started as a fork of the [grf](https://github.com/grf-labs/grf) repository -- we owe a great deal of thanks to the ranger authors for their useful and free package.
 
