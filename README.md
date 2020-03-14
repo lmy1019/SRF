@@ -92,7 +92,7 @@ lines(sort(X.test[,1]),p[order(X.test[,1])]-1.96*std,type="l", col="black",  cex
 legend('topleft', legend=c("True RMST", "Predicted RMST", "95%-CI"), col=c("red", "green", "black"), lty=1:2, cex=0.8)
 ```
 
-![](images/visualization.jpeg)
+![](images/toy.jpeg)
 
 
 ### References
