@@ -25,81 +25,70 @@ The repository first started as a fork of the [grf](https://github.com/grf-labs/
 
 ### Usage Examples
 
-The following script demonstrates how to use GRF for heterogeneous treatment effect estimation. For examples
-of how to use types of forest, as for quantile regression and causal effect estimation using instrumental
-variables, please consult the R documentation on the relevant forest methods (quantile_forest, instrumental_forest, etc.).
+The following script demonstrates how to use SRF for Restricted Mean Survival Time Prediction. 
 
 ```R
+library(survival)
+library(survminer)
+library(dplyr)
 library(grf)
 
-# Generate data.
-n = 2000; p = 10
-X = matrix(rnorm(n*p), n, p)
-X.test = matrix(0, 101, p)
-X.test[,1] = seq(-2, 2, length.out = 101)
 
-# Train a causal forest.
-W = rbinom(n, 1, 0.4 + 0.2 * (X[,1] > 0))
-Y = pmax(X[,1], 0) * W + X[,2] + pmin(X[,3], 0) + rnorm(n)
-tau.forest = causal_forest(X, Y, W)
+# Generate training data and test data
+# Note that survival time only depends on first feature for the sake of visualization
+n=500; p = 3; L=6.5; hazardC=0.1; sigma=0.01
+X=matrix(runif(n*p,0,1),n,p); X.test = matrix(runif(n*p,0,1),n,p)
+betaT = rep(0,p); betaT[1]=2;
+betaC = rep(0,p); betaC[1]=1;
+survtime = log( exp( X%*%betaT+5 )+1 )+rnorm(n,0,sigma); Y.test = log( exp( X.test%*%betaT+5 ) + 1 )+rnorm(n,0,sigma); truth = pmin( log( exp( X.test%*%betaT+5 ) + 1 ),L); Y.test.res.L=pmin(Y.test, L)
+censtime = rexp( n,exp(X%*%betaC)*hazardC )
+Z =  pmin(survtime, censtime); Z.res.L=pmin(Z, L); 
+delta = (censtime>survtime)+0; delta.res.L=delta;  delta.res.L[Z>=L]=1
+surv_object <- Surv(time = Z, event = 1-delta)
+data <- data.frame (x = X)
+output={}
+output[['predictions']]=NULL
+output[['sd']]=NULL
+output[['truth']]=truth
 
-# Estimate treatment effects for the training data using out-of-bag prediction.
-tau.hat.oob = predict(tau.forest)
-hist(tau.hat.oob$predictions)
+#training and testing
+#---------------------------
+cox <- coxph(surv_object ~ ., data = data)
+G =c()
+for(i in 1:n){
+  #if(i%%1000==0){print(i)}
+  cox.summary = summary(survfit(cox, data[i,]))
+  z=Z[i]
+  count = which(sort(c(cox.summary$time, z+1e-10))==z+1e-10)
+  count = count-1
+  if(count <1){count = 1}
+  G =c(G , 1-cox.summary$surv[count])
+}
+G[is.na(G )] <- 0
+G[G==1]<-1-1e-10
+s.forest = custom_forest(X, Z.res.L, delta.res.L, G, num.trees = 1000 )
+s.result  = predict(s.forest, X.test,estimate.variance = TRUE)
+s.predictions =s.result $predictions
+s.var  = s.result $variance.estimates
+coverage.s = sum(truth<(s.predictions +1.96*sqrt(s.var )) & truth>(s.predictions -1.96*sqrt(s.var ))  )/n
+mse.s = sqrt(sum(( s.predictions -Y.test.res.L)^2))/n
+mae.s = (sum(abs( s.predictions -Y.test.res.L)))/n
+print(paste0('Coverage: ', coverage.s))
+print(paste0('RMSE: ', sqrt(mse.s)))
+print(paste0('MAE: ', mae.s))
 
-# Estimate treatment effects for the test sample.
-tau.hat = predict(tau.forest, X.test)
-plot(X.test[,1], tau.hat$predictions, ylim = range(tau.hat$predictions, 0, 2), xlab = "x", ylab = "tau", type = "l")
-lines(X.test[,1], pmax(0, X.test[,1]), col = 2, lty = 2)
 
-# Estimate the conditional average treatment effect on the full sample (CATE).
-average_treatment_effect(tau.forest, target.sample = "all")
-
-# Estimate the conditional average treatment effect on the treated sample (CATT).
-# Here, we don't expect much difference between the CATE and the CATT, since
-# treatment assignment was randomized.
-average_treatment_effect(tau.forest, target.sample = "treated")
-
-# Add confidence intervals for heterogeneous treatment effects; growing more trees is now recommended.
-tau.forest = causal_forest(X, Y, W, num.trees = 4000)
-tau.hat = predict(tau.forest, X.test, estimate.variance = TRUE)
-sigma.hat = sqrt(tau.hat$variance.estimates)
-plot(X.test[,1], tau.hat$predictions, ylim = range(tau.hat$predictions + 1.96 * sigma.hat, tau.hat$predictions - 1.96 * sigma.hat, 0, 2), xlab = "x", ylab = "tau", type = "l")
-lines(X.test[,1], tau.hat$predictions + 1.96 * sigma.hat, col = 1, lty = 2)
-lines(X.test[,1], tau.hat$predictions - 1.96 * sigma.hat, col = 1, lty = 2)
-lines(X.test[,1], pmax(0, X.test[,1]), col = 2, lty = 1)
-
-# In some examples, pre-fitting models for Y and W separately may
-# be helpful (e.g., if different models use different covariates).
-# In some applications, one may even want to get Y.hat and W.hat
-# using a completely different method (e.g., boosting).
-
-# Generate new data.
-n = 4000; p = 20
-X = matrix(rnorm(n * p), n, p)
-TAU = 1 / (1 + exp(-X[, 3]))
-W = rbinom(n ,1, 1 / (1 + exp(-X[, 1] - X[, 2])))
-Y = pmax(X[, 2] + X[, 3], 0) + rowMeans(X[, 4:6]) / 2 + W * TAU + rnorm(n)
-
-forest.W = regression_forest(X, W, tune.parameters = TRUE)
-W.hat = predict(forest.W)$predictions
-
-forest.Y = regression_forest(X, Y, tune.parameters = TRUE)
-Y.hat = predict(forest.Y)$predictions
-
-forest.Y.varimp = variable_importance(forest.Y)
-
-# Note: Forests may have a hard time when trained on very few variables
-# (e.g., ncol(X) = 1, 2, or 3). We recommend not being too aggressive
-# in selection.
-selected.vars = which(forest.Y.varimp / mean(forest.Y.varimp) > 0.2)
-
-tau.forest = causal_forest(X[, selected.vars], Y, W,
-                           W.hat = W.hat, Y.hat = Y.hat,
-                           tune.parameters = TRUE)
-
-# Check whether causal forest predictions are well calibrated.
-test_calibration(tau.forest)
+#plot the true RMST, Predicted RMST and CI with respect to the first feature
+#--------------------------------------
+output[['predictions']]=s.predictions
+output[['sd']]=sqrt(s.var)
+plot(sort(X.test[,1]),truth[order(X.test[,1])],'l',xlim=c(0,1), ylim=c(4,7),col="red",  xlab="Feature 1", ylab="RMST", main="Visualization of Performance of SRF", sub = paste0("Coverage Prob: ", coverage.s, ",RMSE: ", round(sqrt(mse.s),digits=3), ', MAE: ', round((mae.s),digits=3)))
+p = rowMeans(output[['predictions']])
+lines(sort(X.test[,1]),p[order(X.test[,1])],'l',col="green")
+std = rowMeans(output[['sd']])
+lines(sort(X.test[,1]),p[order(X.test[,1])]+1.96*std,type="l", col="black",  cex=0.3)
+lines(sort(X.test[,1]),p[order(X.test[,1])]-1.96*std,type="l", col="black",  cex=0.3)
+legend('topleft', legend=c("True RMST", "Predicted RMST", "95%-CI"), col=c("red", "green", "black"), lty=1:2, cex=0.8)
 ```
 
 
