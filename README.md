@@ -1,35 +1,23 @@
 [![Build Status](https://travis-ci.org/grf-labs/grf.svg?branch=master)](https://travis-ci.org/grf-labs/grf)
 ![CRAN Downloads overall](http://cranlogs.r-pkg.org/badges/grand-total/grf)
 
-# grf: generalized random forests
+# srf: Survival Random Forest
 
-A pluggable package for forest-based statistical estimation and inference. GRF currently provides non-parametric methods for least-squares regression, quantile regression, and treatment effect estimation (optionally using instrumental variables).
+srf is built upon grf package for forest-based statistical estimation and inference. srf currently provides non-parametric methods for restricted mean survival regression.
 
-In addition, GRF supports 'honest' estimation (where one subset of the data is used for choosing splits, and another for populating the leaves of the tree), and confidence intervals for least-squares regression and treatment effect estimation.
+srf supports 'honest' estimation (where one subset of the data is used for choosing splits, and another for populating the leaves of the tree), and confidence intervals for restricted mean survival regression.
 
-This package is currently in beta, and we expect to make continual improvements to its performance and usability. For a practical description of the GRF algorithm, including explanations of model parameters and troubleshooting suggestions, please see the [GRF reference](REFERENCE.md).
+This package is currently in beta, and we expect to make continual improvements to its performance and usability. 
 
 ### Authors
 
-This package is written and maintained by Julie Tibshirani (jtibs@cs.stanford.edu), Susan Athey, and Stefan Wager.
+srf is written and maintained by Mingyang Liu (mingyal@sas.upenn.edu), Hongzhe Li.
 
-The repository first started as a fork of the [ranger](https://github.com/imbs-hl/ranger) repository -- we owe a great deal of thanks to the ranger authors for their useful and free package.
+The repository first started as a fork of the [grf](https://github.com/grf-labs/grf) repository -- we owe a great deal of thanks to the ranger authors for their useful and free package.
 
 ### Installation
 
-The latest release of the package can be installed through CRAN:
 
-```R
-install.packages("grf")
-```
-
-Any published release can also be installed from source:
-
-```R
-install.packages("https://raw.github.com/grf-labs/grf/master/releases/grf_0.10.1.tar.gz", repos = NULL, type = "source")
-```
-
-Note that to install from source, a compiler that implements C++11 is required (clang 3.3 or higher, or g++ 4.8 or higher). If installing on Windows, the RTools toolchain is also required.
 
 
 ### Usage Examples
@@ -111,12 +99,8 @@ tau.forest = causal_forest(X[, selected.vars], Y, W,
 test_calibration(tau.forest)
 ```
 
-### Developing
-
-In addition to providing out-of-the-box forests for quantile regression and causal effect estimation, GRF provides a framework for creating forests tailored to new statistical tasks. If you'd like to develop using GRF, please consult the [algorithm reference](REFERENCE.md) and [development guide](DEVELOPING.md).
 
 ### References
 
-Susan Athey, Julie Tibshirani and Stefan Wager.
-<b>Generalized Random Forests</b>, <i>Annals of Statistics</i>, forthcoming.
-[<a href="https://arxiv.org/abs/1610.01271">arxiv</a>]
+Mingyang Liu, Hongzhe Li
+<b>Regression Analysis of  Restricted Mean Survival Time Using Random Forests</b> forthcoming.
