@@ -36,6 +36,7 @@ library(grf)
 
 # Generate training data and test data
 # Note that survival time only depends on first feature for the sake of visualization
+# Survival time follows log(exp(X*beta)+1) +epsilon
 n=500; p = 3; L=6.5; hazardC=0.1; sigma=0.01
 X=matrix(runif(n*p,0,1),n,p); X.test = matrix(runif(n*p,0,1),n,p)
 betaT = rep(0,p); betaT[1]=2;
