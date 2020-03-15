@@ -94,6 +94,13 @@ legend('topleft', legend=c("True RMST", "Predicted RMST", "95%-CI"), col=c("red"
 
 ![](images/toy.jpeg)
 
+### Comparison with RF predictions when censoring presents
+
+![](images/1e-4.jpeg)
+![](images/1e-3.jpeg)
+![](images/1e-2.jpeg)
+
+
 
 ### References
 
