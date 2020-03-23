@@ -18,7 +18,7 @@ The repository first started as a fork of the [grf](https://github.com/grf-labs/
 ### Installation
 
 1. Clone srf repo to local machine
-2. Find in build_package.R in r-package folder, and change 5th line setwd("/Users/lmy/Downloads/SRF-master/r-package") of build_package.R with your current address
+2. Find build_package.R in r-package folder, and change 5th line setwd("/Users/lmy/Downloads/SRF-master/r-package") of build_package.R with your current address
 3. Running build_package.R (to compile the code and install the modified version of grf package containing srf)
 
 
