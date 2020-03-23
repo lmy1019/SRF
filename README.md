@@ -3,7 +3,7 @@
 
 # SRF: Survival Random Forest
 
-SRF is built upon grf package for forest-based statistical estimation and inference. SRF currently provides non-parametric methods for restricted mean survival regression.
+SRF is built upon grf package for forest-based statistical estimation and inference. SRF currently provides non-parametric approach for estimating restricted mean survival regression.
 
 SRF supports 'honest' estimation (where one subset of the data is used for choosing splits, and another for populating the leaves of the tree), and confidence intervals for restricted mean survival regression.
 
