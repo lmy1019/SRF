@@ -21,8 +21,6 @@ The repository first started as a fork of the [grf](https://github.com/grf-labs/
 2. Find build_package.R in r-package folder, and change 5th line setwd("/Users/lmy/Downloads/SRF-master/r-package") of build_package.R with your current address
 3. Running build_package.R (to compile the code and install the modified version of grf package containing srf)
 
-
-
 ### Usage Examples
 
 The following script demonstrates how to use SRF for Restricted Mean Survival Time Prediction. 
@@ -100,7 +98,8 @@ legend('topleft', legend=c("True RMST", "Predicted RMST", "95%-CI"), col=c("red"
 ![](images/1e-3.jpeg)
 ![](images/1e-2.jpeg)
 
-
+### Real Data analysis
+The real data analysis script is in realdata/tcga_ov_2.R. The ov(L, num_features) does a cross-validation analysis with our methods and previous methods. 'L' stands for the restriction time. 'num_features' is the number of features we consider in the analysis after feature screening. The feature screening is through univariate pvalue from cox model.
 
 ### References
 
