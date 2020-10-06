@@ -98,6 +98,10 @@ legend('topleft', legend=c("True RMST", "Predicted RMST", "95%-CI"), col=c("red"
 ![](images/1e-3.jpeg)
 ![](images/1e-2.jpeg)
 
+### Simulation
+
+In Simulation folder, you can run sim.R to reproduce the simulation results for different settings. Simulation result for each setting is provided as a csv file. In Simulation/Visualization for RSF folder, you can run visualization.R to reproduce the visualization of predictions from different models. Visualization result for each setting is provided as a pdf file and csv file.
+
 ### Real Data analysis
 The real data analysis script is in realdata/tcga_ov_2.R. The ov(L, num_features) does a cross-validation analysis with our methods and previous methods. 'L' stands for the restriction time. 'num_features' is the number of features we consider in the analysis after feature screening. The feature screening is through univariate pvalue from cox model.
 
